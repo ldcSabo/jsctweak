@@ -1,0 +1,35 @@
+name: Build jsctweak dylib
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compile on macOS (iOS arm64 SDK)
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the dylib
+        run: |
+          mkdir -p build
+          xcrun -sdk iphoneos clang -arch arm64 -dynamiclib -O2 \
+            -fobjc-arc -o build/jsctweak.dylib Tweak_readbit.m \
+            -framework Foundation
+
+      - name: Inspect
+        run: |
+          file build/jsctweak.dylib
+          xcrun -sdk iphoneos otool -L build/jsctweak.dylib || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jsctweak-dylib
+          path: build/jsctweak.dylib
+          retention-days: 30
