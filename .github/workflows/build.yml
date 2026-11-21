@@ -20,7 +20,9 @@ jobs:
           git clone --recursive --depth 1 https://github.com/theos/theos.git $HOME/theos
           ln -sf "$(xcrun -sdk iphoneos --show-sdk-path)" $HOME/theos/sdks/iPhoneOS15.8.sdk
           (brew uninstall ldid 2>/dev/null || true)
-          (brew install theos/theos/ldid || brew install ldid)
+          curl -L -o /usr/local/bin/ldid https://github.com/ProcursusTeam/ldid/releases/latest/download/ldid_macosx_arm64
+          chmod +x /usr/local/bin/ldid
+          ldid 2>&1 | head -3
           export PATH="$HOME/theos/bin:$PATH"
           echo "$HOME/theos/bin" >> $GITHUB_PATH
 
