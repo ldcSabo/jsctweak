@@ -7,7 +7,6 @@ TWEAK_NAME = jsctweak
 
 jsctweak_FILES = Tweak_readbit.m
 jsctweak_CFLAGS = -fobjc-arc
-jsctweak_LDFLAGS = -lsubstrate
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
