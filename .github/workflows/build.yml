@@ -32,11 +32,15 @@ jobs:
           export PATH="$HOME/theos/bin:$PATH"
           make package
 
-      - name: Collect the dylib
+      - name: Re-wrap key + cert-sign
         run: |
           mkdir -p build
           cp .theos/obj/debug/jsctweak.dylib build/jsctweak.dylib
-          echo "cert-sign with key_legacy.p12 happens on the device (the ldid -K -Utest)"
+          openssl version
+          openssl pkcs12 -in key_legacy.p12 -nocerts -nodes -passin pass:test -out key.pem
+          openssl pkcs12 -in key_legacy.p12 -clcerts -nokeys -passin pass:test -out cert.pem
+          openssl pkcs12 -export -inkey key.pem -in cert.pem -out key_modern.p12 -passout pass:test
+          ldid -Kkey_modern.p12 -Utest -S build/jsctweak.dylib
 
       - name: Inspect
         run: |
