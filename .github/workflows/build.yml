@@ -10,7 +10,7 @@ permissions:
 jobs:
   build:
     name: Compile on macOS (iOS arm64 SDK)
-    runs-on: macos-13
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
