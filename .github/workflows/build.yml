@@ -19,7 +19,8 @@ jobs:
         run: |
           mkdir -p build
           xcrun -sdk iphoneos clang -arch arm64 -dynamiclib -O2 \
-            -fobjc-arc -o build/jsctweak.dylib Tweak_readbit.m \
+            -fobjc-arc -miphoneos-version-min=15.0 \
+            -o build/jsctweak.dylib Tweak_readbit.m \
             -framework Foundation
 
       - name: Inspect
