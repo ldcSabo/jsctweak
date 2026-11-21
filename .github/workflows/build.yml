@@ -32,11 +32,11 @@ jobs:
           export PATH="$HOME/theos/bin:$PATH"
           make package
 
-      - name: Cert-sign (ldid -K legacy)
+      - name: Collect the dylib
         run: |
           mkdir -p build
           cp .theos/obj/debug/jsctweak.dylib build/jsctweak.dylib
-          ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib
+          echo "cert-sign with key_legacy.p12 happens on the device (the ldid -K -Utest)"
 
       - name: Inspect
         run: |
