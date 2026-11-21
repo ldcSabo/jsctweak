@@ -32,7 +32,7 @@ jobs:
       - name: Cert-sign (ldid -K legacy)
         run: |
           mkdir -p build
-          cp .theos/obj/debug/arm64/jsctweak.dylib build/jsctweak.dylib
+          cp .theos/obj/debug/jsctweak.dylib build/jsctweak.dylib
           ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib
 
       - name: Inspect
