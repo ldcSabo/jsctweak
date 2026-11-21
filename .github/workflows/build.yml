@@ -1,4 +1,4 @@
-name: Build jsctweak dylib
+name: Build jsctweak dylib (theos, proven path)
 
 on:
   push:
@@ -9,24 +9,32 @@ permissions:
 
 jobs:
   build:
-    name: Compile on macOS (iOS arm64 SDK)
+    name: theos make + ldid cert-sign
     runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the dylib
+      - name: Install theos
+        run: |
+          git clone --recursive --depth 1 https://github.com/theos/theos.git /opt/theos
+          ln -sf "$(xcrun -sdk iphoneos --show-sdk-path)" /opt/theos/sdks/iPhoneOS15.8.sdk
+
+      - name: make package (the proven theos build)
+        run: |
+          export THEOS=/opt/theos
+          make package
+
+      - name: Cert-sign (ldid -K legacy)
         run: |
           mkdir -p build
-          xcrun -sdk iphoneos clang -arch arm64 -dynamiclib -O2 \
-            -fobjc-arc -miphoneos-version-min=15.0 \
-            -o build/jsctweak.dylib Tweak_readbit.m \
-            -framework Foundation
+          cp .theos/obj/debug/arm64/jsctweak.dylib build/jsctweak.dylib
+          /opt/theos/bin/ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib || brew install ldid && ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib
 
       - name: Inspect
         run: |
           file build/jsctweak.dylib
-          xcrun -sdk iphoneos otool -L build/jsctweak.dylib || true
+          vtool -show build/jsctweak.dylib || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
