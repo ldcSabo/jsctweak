@@ -19,17 +19,21 @@ jobs:
         run: |
           git clone --recursive --depth 1 https://github.com/theos/theos.git $HOME/theos
           ln -sf "$(xcrun -sdk iphoneos --show-sdk-path)" $HOME/theos/sdks/iPhoneOS15.8.sdk
+          (brew install ldid || brew install theos/theos/ldid)
+          export PATH="$HOME/theos/bin:$PATH"
+          echo "$HOME/theos/bin" >> $GITHUB_PATH
 
       - name: make package (the proven theos build)
         run: |
           export THEOS=$HOME/theos
+          export PATH="$HOME/theos/bin:$PATH"
           make package
 
       - name: Cert-sign (ldid -K legacy)
         run: |
           mkdir -p build
           cp .theos/obj/debug/arm64/jsctweak.dylib build/jsctweak.dylib
-          $HOME/theos/bin/ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib || (brew install ldid && ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib)
+          ldid -Kkey_legacy.p12 -Utest -S build/jsctweak.dylib
 
       - name: Inspect
         run: |
